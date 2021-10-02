@@ -1,6 +1,7 @@
 package fi.karttunen.Bookstore.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +27,7 @@ public class BookController {
 	}
 	
 	@RequestMapping(value = "/add")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public String addBook (Model model) {
 		model.addAttribute("book", new Book());
 		model.addAttribute("categories", crepository.findAll());
@@ -33,6 +35,7 @@ public class BookController {
 	}
 	
 	@RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public String deleteBook(@PathVariable("id") Long bookId, Model model) {
 	 repository.deleteById(bookId);
 	 return "redirect:../booklist";
@@ -40,13 +43,15 @@ public class BookController {
 	
 	
 	@RequestMapping(value = "/edit/{id}")
-		public String addBook(@PathVariable("id") Long bookId, Model model){
+	@PreAuthorize("hasAuthority('ADMIN')")
+	public String addBook(@PathVariable("id") Long bookId, Model model){
 		model.addAttribute("book", repository.findById(bookId));
 		model.addAttribute("categories", crepository.findAll());
 		return "editbook";
 	}
 	
 	@PostMapping("/save")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public String save(Book book) {
 		repository.save(book);
 		return "redirect:booklist";
